@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descubra o que está impedindo essa aproximação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --wine: #7A2142;
+    --wine-deep: #4A1228;
+    --plum: #2E1120;
+    --gold: #B08D57;
+    --gold-light: #E3CBA0;
+    --blush: #F7E4DE;
+    --cream: #FCF6F2;
+    --ink: #3A1220;
+    --ink-soft: #7A5A64;
+    --line: rgba(122,33,66,0.16);
+    --shadow-soft: 0 18px 40px -24px rgba(74,18,40,0.35);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:17px;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.serif{
+    font-family:'Lora', serif;
+    font-weight:600;
+    margin:0;
+    color:var(--wine-deep);
+  }
+  p{margin:0;}
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  ::selection{background:var(--gold-light); color:var(--wine-deep);}
+
+  :focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:3px;
+  }
+
+  .hidden{display:none !important;}
+
+  /* ---------- QUIZ STAGE ---------- */
+  #quizStage{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px 56px;
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(122,33,66,0.10), transparent 70%),
+      radial-gradient(80% 60% at 85% 100%, rgba(176,141,87,0.12), transparent 60%),
+      var(--cream);
+  }
+
+  .progress-track{
+    width:100%;
+    max-width:420px;
+    height:3px;
+    background:var(--line);
+    border-radius:2px;
+    margin-bottom:40px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--wine), var(--gold));
+    transition:width 0.6s ease;
+  }
+
+  .quiz-card{
+    width:100%;
+    max-width:460px;
+    text-align:center;
+  }
+
+  .motif{
+    width:34px;
+    height:34px;
+    margin:0 auto 22px;
+    color:var(--gold);
+    opacity:0;
+    animation:motifIn 0.9s ease forwards 0.15s;
+  }
+  @keyframes motifIn{
+    from{opacity:0; transform:translateY(6px) scale(0.9);}
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+
+  .screen{
+    animation:screenIn 0.5s ease;
+  }
+  @keyframes screenIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .eyebrow-line{
+    display:block;
+    width:40px;
+    height:1px;
+    background:var(--gold);
+    margin:0 auto 18px;
+  }
+
+  h1.hero-title{
+    font-size:clamp(32px, 5.5vw, 46px);
+    line-height:1.28;
+    letter-spacing:0.1px;
+  }
+  h1.hero-title em{
+    font-style:italic;
+    color:var(--wine);
+  }
+
+  .subhead{
+    font-size:19px;
+    color:var(--ink-soft);
+    margin-top:18px;
+    line-height:1.6;
+  }
+
+  .question-title{
+    font-size:clamp(26px, 4vw, 32px);
+    line-height:1.4;
+    margin-bottom:30px;
+    font-family:'Lora', serif;
+    font-weight:600;
+    color:var(--wine-deep);
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .option{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    text-align:left;
+    width:100%;
+    padding:16px 18px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:3px solid transparent;
+    border-radius:2px;
+    cursor:pointer;
+    font-size:17.5px;
+    line-height:1.5;
+    color:var(--ink);
+    transition:border-color 0.25s ease, background 0.25s ease, transform 0.15s ease;
+  }
+  .option:hover{
+    border-left-color:var(--gold);
+    background:var(--blush);
+  }
+  .option:active{transform:scale(0.99);}
+  .option.selected{
+    border-left-color:var(--wine);
+    background:var(--blush);
+  }
+  .option .dot{
+    flex:0 0 auto;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    border:1.4px solid var(--ink-soft);
+  }
+  .option.selected .dot{
+    background:var(--wine);
+    border-color:var(--wine);
+  }
+
+  .cta-btn{
+    display:inline-block;
+    margin-top:8px;
+    padding:16px 36px;
+    background:var(--wine);
+    color:var(--cream);
+    border:none;
+    border-radius:2px;
+    font-size:17px;
+    font-weight:500;
+    letter-spacing:0.2px;
+    cursor:pointer;
+    transition:background 0.25s ease, transform 0.15s ease;
+  }
+  .cta-btn:hover{background:var(--wine-deep);}
+  .cta-btn:active{transform:scale(0.98);}
+
+  .agravamento p{
+    font-size:18px;
+    line-height:1.7;
+    color:var(--ink);
+    text-align:left;
+    margin-bottom:16px;
+  }
+  .agravamento p:first-child{color:var(--ink-soft);}
+
+  /* ---------- LOADING ---------- */
+  .loading-flame{
+    width:30px;
+    height:44px;
+    margin:0 auto 30px;
+    color:var(--wine);
+    animation:flicker 1.6s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{transform:scale(1) translateY(0); opacity:1;}
+    45%{transform:scale(1.05, 0.96) translateY(-1px); opacity:0.92;}
+    70%{transform:scale(0.97,1.04) translateY(1px); opacity:1;}
+  }
+  .loading-text{
+    font-size:17px;
+    color:var(--ink-soft);
+    min-height:24px;
+    transition:opacity 0.3s ease;
+  }
+
+  /* ---------- RESULT ---------- */
+  .result-title{
+    font-size:clamp(27px,4.4vw,34px);
+    line-height:1.42;
+  }
+  .result-body{
+    font-size:17.5px;
+    line-height:1.75;
+    color:var(--ink-soft);
+    text-align:left;
+    margin-top:22px;
+  }
+  .result-body p{margin-bottom:14px;}
+
+  /* ---------- SALES PAGE ---------- */
+  .band{
+    padding:72px 20px;
+  }
+  .band-inner{
+    max-width:640px;
+    margin:0 auto;
+  }
+  .band.cream{background:var(--cream);}
+  .band.blush{background:var(--blush);}
+  .band.plum{background:var(--plum); color:#F3E7E0;}
+  .band.plum h2, .band.plum h3{color:var(--gold-light);}
+
+  .transition-title{
+    font-size:clamp(27px,4.4vw,34px);
+    line-height:1.42;
+    text-align:center;
+    font-family:'Lora', serif;
+    font-weight:600;
+    color:var(--wine-deep);
+  }
+  .transition-text{
+    font-size:18px;
+    line-height:1.75;
+    color:var(--ink-soft);
+    text-align:center;
+    margin-top:18px;
+    max-width:520px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .benefit-list{
+    list-style:none;
+    margin:36px 0 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .benefit-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+    font-size:17.5px;
+    line-height:1.6;
+  }
+  .benefit-icon{
+    flex:0 0 auto;
+    width:20px;
+    height:20px;
+    margin-top:2px;
+    color:var(--gold);
+  }
+
+  .bonus-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    margin-top:36px;
+  }
+  .bonus-item{
+    text-align:left;
+    padding-top:18px;
+    border-top:1px solid rgba(227,203,160,0.35);
+  }
+  .bonus-num{
+    font-family:'Lora', serif;
+    font-size:30px;
+    color:var(--gold-light);
+    display:block;
+    margin-bottom:8px;
+  }
+  .bonus-item h3{
+    font-size:19px;
+    color:var(--gold-light);
+    font-weight:600;
+  }
+  .bonus-item p{
+    font-size:15.5px;
+    color:rgba(243,231,224,0.8);
+    margin-top:8px;
+    line-height:1.6;
+  }
+
+  .testimonials{
+    margin-top:36px;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+  }
+  .testimonial{
+    max-width:420px;
+    font-size:19px;
+    font-style:italic;
+    font-family:'Lora', serif;
+    font-weight:500;
+    line-height:1.6;
+    color:var(--ink);
+    position:relative;
+    padding-left:20px;
+    border-left:2px solid var(--gold);
+  }
+  .testimonial:nth-child(even){
+    align-self:flex-end;
+    text-align:right;
+    padding-left:0;
+    padding-right:20px;
+    border-left:none;
+    border-right:2px solid var(--gold);
+  }
+  .testimonial span{
+    display:block;
+    margin-top:8px;
+    font-family:'Inter', sans-serif;
+    font-style:normal;
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+
+  .offer-box{
+    text-align:center;
+    padding:48px 32px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:2px;
+  }
+  .offer-old{
+    font-size:17px;
+    color:var(--ink-soft);
+    text-decoration:line-through;
+    opacity:0.75;
+  }
+  .offer-new{
+    font-family:'Lora', serif;
+    font-weight:700;
+    font-size:clamp(44px,7.5vw,60px);
+    color:var(--wine);
+    margin-top:8px;
+    line-height:1.1;
+  }
+  .offer-sub{
+    font-size:15px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    letter-spacing:0.2px;
+  }
+  .offer-box .cta-btn{
+    margin-top:26px;
+    padding:18px 40px;
+    font-size:17.5px;
+  }
+
+  .guarantee{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    max-width:480px;
+    margin:44px auto 0;
+    padding:18px 22px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    text-align:left;
+  }
+  .guarantee-icon{
+    flex:0 0 auto;
+    width:26px;
+    height:26px;
+    color:var(--gold);
+  }
+  .guarantee p{
+    font-size:15.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+
+  footer{
+    padding:36px 20px 48px;
+    text-align:center;
+    background:var(--cream);
+  }
+  footer p{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    line-height:1.7;
+    max-width:420px;
+    margin:0 auto;
+    opacity:0.85;
+  }
+
+  @media (max-width: 560px){
+    .bonus-grid{grid-template-columns:1fr; gap:28px;}
+    .testimonial{max-width:100%;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== QUIZ STAGE ===================== -->
+<div id="quizStage">
+
+  <div class="progress-track" id="progressTrack" style="display:none;">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- SCREEN 1 — HERO -->
+  <section class="screen" id="screen-1" data-progress="0">
+    <div class="quiz-card">
+      <svg class="motif" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3">
+        <path d="M12 3c-3.6 1.6-6 5-6 9a6 6 0 0 0 6 6c-4-1.2-6-4.6-6-9 0-3.4 2.4-5.6 6-6z" fill="currentColor" stroke="none"/>
+      </svg>
+      <h1 class="hero-title">Descubra em menos de 2 minutos o que está <em>impedindo</em> essa aproximação</h1>
+      <p class="subhead">Responda algumas perguntas e receba seu resultado personalizado.</p>
+      <button class="cta-btn" style="margin-top:32px;" onclick="goTo(2)">Começar agora</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 2 — Q1 -->
+  <section class="screen hidden" id="screen-2" data-progress="15">
+    <div class="quiz-card">
+      <p class="question-title">Existe alguém específico ocupando seus pensamentos neste momento?</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this,3)"><span class="dot"></span>Sim, penso nele todos os dias</button>
+        <button class="option" onclick="selectOption(this,3)"><span class="dot"></span>Sim, mas tento esquecer</button>
+        <button class="option" onclick="selectOption(this,3)"><span class="dot"></span>Estou conhecendo alguém</button>
+        <button class="option" onclick="selectOption(this,3)"><span class="dot"></span>Não, quero atrair um novo amor</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 3 — Q2 -->
+  <section class="screen hidden" id="screen-3" data-progress="30">
+    <div class="quiz-card">
+      <p class="question-title">Como você definiria sua situação hoje?</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this,4)"><span class="dot"></span>Ele parece distante</button>
+        <button class="option" onclick="selectOption(this,4)"><span class="dot"></span>Ele demonstra interesse mas não age</button>
+        <button class="option" onclick="selectOption(this,4)"><span class="dot"></span>Conversamos pouco</button>
+        <button class="option" onclick="selectOption(this,4)"><span class="dot"></span>Ele desaparece e reaparece</button>
+        <button class="option" onclick="selectOption(this,4)"><span class="dot"></span>Ainda nem tenho coragem de me aproximar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 4 — Q3 -->
+  <section class="screen hidden" id="screen-4" data-progress="45">
+    <div class="quiz-card">
+      <p class="question-title">Quando foi a última vez que ele tomou iniciativa com você?</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this,5)"><span class="dot"></span>Nos últimos dias</button>
+        <button class="option" onclick="selectOption(this,5)"><span class="dot"></span>Há algumas semanas</button>
+        <button class="option" onclick="selectOption(this,5)"><span class="dot"></span>Há alguns meses</button>
+        <button class="option" onclick="selectOption(this,5)"><span class="dot"></span>Nunca tomou iniciativa</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 5 — AGRAVAMENTO -->
+  <section class="screen hidden" id="screen-5" data-progress="65">
+    <div class="quiz-card agravamento">
+      <p>Muitas mulheres acreditam que o problema está na aparência ou na sorte.</p>
+      <p>Mas, na maioria dos casos, o bloqueio está relacionado à falta de conexão emocional, insegurança ou energia desalinhada.</p>
+      <button class="cta-btn" style="margin-top:18px;" onclick="goTo(6)">Continuar</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 6 — Q4 emocional -->
+  <section class="screen hidden" id="screen-6" data-progress="78">
+    <div class="quiz-card">
+      <p class="question-title">Qual dessas situações mais machuca você?</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this,7)"><span class="dot"></span>Ser ignorada</button>
+        <button class="option" onclick="selectOption(this,7)"><span class="dot"></span>Ver ele interessado em outra</button>
+        <button class="option" onclick="selectOption(this,7)"><span class="dot"></span>Esperar mensagens que nunca chegam</button>
+        <button class="option" onclick="selectOption(this,7)"><span class="dot"></span>Sentir que não sou prioridade</button>
+        <button class="option" onclick="selectOption(this,7)"><span class="dot"></span>Não conseguir esquecê-lo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 7 — Q5 -->
+  <section class="screen hidden" id="screen-7" data-progress="90">
+    <div class="quiz-card">
+      <p class="question-title">Você acredita que energias e intenções podem influenciar relacionamentos?</p>
+      <div class="options">
+        <button class="option" onclick="selectOption(this,8)"><span class="dot"></span>Sim, acredito muito</button>
+        <button class="option" onclick="selectOption(this,8)"><span class="dot"></span>Acredito parcialmente</button>
+        <button class="option" onclick="selectOption(this,8)"><span class="dot"></span>Tenho curiosidade</button>
+        <button class="option" onclick="selectOption(this,8)"><span class="dot"></span>Não sei dizer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREEN 8 — LOADING -->
+  <section class="screen hidden" id="screen-8" data-progress="100">
+    <div class="quiz-card">
+      <svg class="loading-flame" viewBox="0 0 24 34" fill="currentColor">
+        <path d="M12 0c1 4-4 6-4 12a4 4 0 0 0 8 0c0-2-1-3-1-5 2 2 3 5 3 8a6 6 0 0 1-12 0C6 9 10 6 12 0z"/>
+      </svg>
+      <h2 class="serif" style="font-size:22px; margin-bottom:14px;">Seu resultado está sendo calculado</h2>
+      <p class="loading-text" id="loadingText" aria-live="polite">Analisando respostas...</p>
+    </div>
+  </section>
+
+  <!-- SCREEN 9 — RESULTADO -->
+  <section class="screen hidden" id="screen-9" data-progress="100">
+    <div class="quiz-card" style="max-width:520px;">
+      <h2 class="result-title">Seu perfil indica um forte desejo de conexão emocional que, hoje, encontra barreiras de aproximação</h2>
+      <div class="result-body">
+        <p>Com base nas suas respostas, identificamos sinais de bloqueio emocional, insegurança na aproximação ou falta de iniciativa da outra pessoa.</p>
+        <p>Essas situações são comuns e levam muitas mulheres a procurar práticas que aumentem sua confiança, fortaleçam sua intenção e criem oportunidades para novos movimentos no campo amoroso.</p>
+      </div>
+      <button class="cta-btn" style="margin-top:22px;" onclick="revealSalesPage()">Ver minha recomendação</button>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===================== SALES PAGE ===================== -->
+<div id="salesPage" class="hidden">
+
+  <!-- TRANSIÇÃO -->
+  <section class="band cream">
+    <div class="band-inner">
+      <p class="transition-title">Por isso preparamos uma recomendação especial para você</p>
+      <p class="transition-text">O Guia de Simpatias Amorosas reúne dezenas de práticas organizadas passo a passo para mulheres que desejam fortalecer sua energia afetiva e aumentar as oportunidades de viver uma conexão amorosa.</p>
+    </div>
+  </section>
+
+  <!-- BENEFÍCIOS -->
+  <section class="band blush">
+    <div class="band-inner">
+      <h2 style="font-size:30px;">O que você encontra dentro do guia</h2>
+      <ul class="benefit-list">
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Simpatias para atrair interesse amoroso</li>
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Simpatias para despertar saudade</li>
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Rituais simples com materiais acessíveis</li>
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Práticas explicadas passo a passo</li>
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Acesso imediato</li>
+        <li><svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 21s-7-4.5-9.5-9C.5 8 2 4 6 4c2.3 0 3.7 1.3 4.5 2.6C11.3 5.3 12.7 4 15 4c4 0 5.5 4 3.5 8-2.5 4.5-9.5 9-9.5 9z"/></svg>Consulta ilimitada</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- BÔNUS -->
+  <section class="band plum">
+    <div class="band-inner">
+      <h2 style="font-size:30px;">Bônus inclusos na sua compra</h2>
+      <div class="bonus-grid">
+        <div class="bonus-item">
+          <span class="bonus-num">1</span>
+          <h3>Orações para amor e atração</h3>
+          <p>Palavras para fortalecer sua intenção antes de cada prática.</p>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-num">2</span>
+          <h3>Checklist de preparação energética</h3>
+          <p>Um roteiro simples para se preparar antes de cada simpatia.</p>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-num">3</span>
+          <h3>Calendário das melhores datas</h3>
+          <p>Saiba os dias mais indicados para realizar cada prática.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVA SOCIAL -->
+  <section class="band cream">
+    <div class="band-inner">
+      <h2 style="font-size:30px; margin-bottom:6px;">O que dizem as leitoras</h2>
+      <div class="testimonials">
+        <p class="testimonial">"Gostei porque tudo é explicado de forma simples."<span>— Leitora do Guia</span></p>
+        <p class="testimonial">"Consegui realizar as práticas sem dificuldade."<span>— Leitora do Guia</span></p>
+        <p class="testimonial">"Material muito organizado, dá pra seguir passo a passo."<span>— Leitora do Guia</span></p>
+        <p class="testimonial">"Valeu o investimento."<span>— Leitora do Guia</span></p>
+        <p class="testimonial">"Recebi acesso imediatamente após a compra."<span>— Leitora do Guia</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTA -->
+  <section class="band blush">
+    <div class="band-inner">
+      <div class="offer-box">
+        <p class="offer-old">De R$97,00</p>
+        <p class="offer-new">R$39,90</p>
+        <p class="offer-sub">Pagamento único · Acesso imediato</p>
+        <button class="cta-btn" onclick="window.location.href='https://pay.cakto.com.br/gpe6yqz_1097920'">Quero receber meu acesso agora</button>
+      </div>
+
+      <div class="guarantee">
+        <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>
+        <p>7 dias de garantia. Se não gostar do material, solicite o reembolso dentro do prazo.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Produto digital. Resultados variam de pessoa para pessoa. O conteúdo possui finalidade educacional e informativa.</p>
+  </footer>
+
+</div>
+
+<script>
+  function goTo(n){
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    const next = document.getElementById('screen-' + n);
+    next.classList.remove('hidden');
+    void next.offsetWidth; // restart animation
+    next.classList.remove('screen');
+    void next.offsetWidth;
+    next.classList.add('screen');
+
+    const progress = next.getAttribute('data-progress');
+    const track = document.getElementById('progressTrack');
+    const fill = document.getElementById('progressFill');
+    if(progress === '0'){
+      track.style.display = 'none';
+    } else {
+      track.style.display = 'block';
+      fill.style.width = progress + '%';
+    }
+
+    if(n === 8){ runLoading(); }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function selectOption(btn, nextScreen){
+    const siblings = btn.parentElement.querySelectorAll('.option');
+    siblings.forEach(o => o.classList.remove('selected'));
+    btn.classList.add('selected');
+    setTimeout(() => goTo(nextScreen), 380);
+  }
+
+  function runLoading(){
+    const msgs = ['Analisando respostas...','Identificando bloqueios...','Calculando compatibilidade emocional...','Resultado pronto...'];
+    const el = document.getElementById('loadingText');
+    let i = 0;
+    el.style.opacity = 1;
+    const interval = setInterval(() => {
+      i++;
+      if(i >= msgs.length){
+        clearInterval(interval);
+        setTimeout(() => goTo(9), 500);
+        return;
+      }
+      el.style.opacity = 0;
+      setTimeout(() => { el.textContent = msgs[i]; el.style.opacity = 1; }, 250);
+    }, 700);
+  }
+
+  function revealSalesPage(){
+    document.getElementById('quizStage').classList.add('hidden');
+    const sales = document.getElementById('salesPage');
+    sales.classList.remove('hidden');
+    sales.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+</script>
+
+</body>
+</html>
